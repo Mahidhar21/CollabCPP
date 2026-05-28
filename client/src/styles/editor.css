@@ -1,0 +1,29 @@
+.collab-editor-wrap {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+}
+
+.collab-editor-wrap .monaco-editor,
+.collab-editor-wrap .monaco-editor-background {
+  background-color: #0a0a0b !important;
+}
+
+.remote-cursor-line {
+  border-left: 2px solid rgba(125, 211, 252, 0.85);
+  margin-left: -1px;
+}
+
+.remote-cursor-label {
+  font-family: ui-monospace, monospace;
+  font-size: 10px;
+  padding: 0 4px;
+  border-radius: 3px;
+  margin-left: 2px;
+  line-height: 14px;
+  white-space: nowrap;
+}
+
+.remote-selection {
+  opacity: 0.15;
+}
