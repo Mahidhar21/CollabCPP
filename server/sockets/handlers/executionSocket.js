@@ -11,11 +11,11 @@ export function registerExecutionSocketHandlers(io, socket) {
   /**
    * Handle code execution request from client
    * Event: execute_code
-   * Body: { roomId, code }
+   * Body: { roomId, code, stdin }
    */
   socket.on('execute_code', async (data, ack) => {
     try {
-      const { roomId, code } = data || {};
+      const { roomId, code, stdin } = data || {};
 
       if (!roomId || !code) {
         logger.warn(`[Execution] Invalid execute_code data from ${socket.id}`);
@@ -35,12 +35,13 @@ export function registerExecutionSocketHandlers(io, socket) {
         return;
       }
 
-      logger.info(`[Execution] User ${socket.user?.username || 'unknown'} executing code in room ${roomId}`);
+      logger.info(`[Execution] User ${socket.user?.username || 'unknown'} executing code in room ${roomId}${stdin ? ' (with stdin)' : ''}`);
 
-      // Execute code
+      // Execute code with stdin if provided
       const result = await executeCode(code, {
         compileTimeout: 10000,
         runtimeTimeout: 30000,
+        stdin: stdin || '',
       });
 
       // Broadcast result to room

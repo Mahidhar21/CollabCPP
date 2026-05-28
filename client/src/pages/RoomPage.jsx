@@ -1,22 +1,17 @@
 import { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import RoomHeader from '../components/room/RoomHeader.jsx';
-import { RoomSidebar } from '../components/room/RoomSidebar.jsx';
-import { FullscreenPanel } from '../components/room/FullscreenPanel.jsx';
-import { ResizableDivider } from '../components/ui/ResizableDivider.jsx';
-import EditorPanel from '../components/room/EditorPanel.jsx';
-import OutputPanel from '../components/room/OutputPanel.jsx';
+import { IDERoomLayout } from '../components/room/IDERoomLayout.jsx';
 import { SessionStatus } from '../components/room/SessionStatus.jsx';
 import Button from '../components/ui/Button.jsx';
 import Spinner from '../components/auth/Spinner.jsx';
 import { useRoom } from '../hooks/useRooms.js';
 import { useRoomSocket } from '../hooks/useRoomSocket.js';
 import { useCollaborativeEditor } from '../hooks/useCollaborativeEditor.js';
-import { useCodeExecution } from '../hooks/useCodeExecution.js';
+import { useCodeExecutionWithInput } from '../hooks/useCodeExecutionWithInput.js';
 import { useChat } from '../hooks/useChat.js';
 import { usePresence } from '../hooks/usePresence.js';
 import { useSession } from '../hooks/useSession.js';
-import { usePanelLayout } from '../hooks/usePanelLayout.js';
 import useAuthStore from '../store/useAuthStore.js';
 
 export default function RoomPage() {
@@ -42,12 +37,15 @@ export default function RoomPage() {
     handleEditorChange,
   } = useCollaborativeEditor(normalizedRoomId, isJoined && accessReady, user);
 
+  // Enhanced execution with stdin support
   const {
     executeCode,
     isExecuting,
     executionOutput,
     executionError,
-  } = useCodeExecution(normalizedRoomId, isJoined && accessReady);
+    stdinInput,
+    setStdinInput,
+  } = useCodeExecutionWithInput(normalizedRoomId, isJoined && accessReady);
 
   const {
     messages,
@@ -69,17 +67,6 @@ export default function RoomPage() {
     persistChatMessage,
     saveSession,
   } = useSession(normalizedRoomId, isJoined && accessReady);
-
-  // Panel layout management
-  const {
-    panelStates,
-    sidebarWidth,
-    setSidebarSize,
-    fullscreenPanel,
-    setFullscreen,
-    closeFullscreen,
-    togglePanel,
-  } = usePanelLayout();
 
   const [copied, setCopied] = useState(false);
 
@@ -152,18 +139,6 @@ export default function RoomPage() {
     );
   }
 
-  // Fullscreen mode rendering
-  if (fullscreenPanel) {
-    return (
-      <FullscreenPanel
-        panelName={fullscreenPanel}
-        onClose={closeFullscreen}
-        isJoined={isJoined && accessReady}
-        roomId={normalizedRoomId}
-      />
-    );
-  }
-
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-surface">
       {/* Header */}
@@ -182,60 +157,39 @@ export default function RoomPage() {
         </div>
       )}
 
-      {/* Main content area with resizable layout */}
-      <div className="flex min-h-0 flex-1 overflow-hidden">
-        {/* Resizable Sidebar */}
-        <RoomSidebar
-          sidebarWidth={sidebarWidth}
-          onResize={setSidebarSize}
-          participants={participants}
-          presenceLoading={presenceLoading}
-          presenceError={presenceError}
-        chatProps={{
-          messages,
-          loading: chatLoading,
-          error: chatError,
-          isSending,
-          sendMessage,
-        }}
+      {/* Main IDE Layout */}
+      <IDERoomLayout
+        code={code}
+        onCodeChange={handleEditorChange}
+        editorRef={editorRef}
+        monacoRef={monacoRef}
+        onEditorMount={handleEditorMount}
+        remoteCursors={remoteCursors}
+        typers={typers}
+        isConnected={isJoined && isConnected}
+        onRunCode={executeCode}
+        isExecuting={isExecuting}
+        executionOutput={executionOutput}
+        executionError={executionError}
+        stdinInput={stdinInput}
+        onStdinChange={setStdinInput}
+        participants={participants}
+        presenceLoading={presenceLoading}
+        presenceError={presenceError}
+        chatMessages={messages}
+        chatLoading={chatLoading}
+        chatError={chatError}
+        chatIsSending={isSending}
+        onChatSend={sendMessage}
+        room={room}
         isJoined={isJoined && accessReady}
         roomId={normalizedRoomId}
-        onFullscreenChat={() => setFullscreen('chat')}
-        onFullscreenWhiteboard={() => setFullscreen('whiteboard')}
-        fullscreenPanel={fullscreenPanel}
-        panelStates={panelStates}
-        onTogglePanel={togglePanel}
-          minSize={240}
-          maxSize={500}
-        />
-
-        {/* Main editor area */}
-        <main className="flex min-h-0 flex-1 flex-col gap-2 p-2">
-          {/* Editor */}
-          <EditorPanel
-            code={code}
-            onChange={handleEditorChange}
-            onMount={handleEditorMount}
-            remoteCursors={remoteCursors}
-            typers={typers}
-            editorRef={editorRef}
-            monacoRef={monacoRef}
-            isConnected={isJoined && isConnected}
-            onRunCode={executeCode}
-            isExecuting={isExecuting}
-          />
-
-          {/* Output Console */}
-          <OutputPanel
-            output={executionOutput}
-            isExecuting={isExecuting}
-            error={executionError}
-          />
-        </main>
-      </div>
+        onCopyId={handleCopyId}
+      />
 
       {/* Session persistence status */}
       <SessionStatus status={saveStatus} lastSaved={new Date()} />
     </div>
   );
 }
+

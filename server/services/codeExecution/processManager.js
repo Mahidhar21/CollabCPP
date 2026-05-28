@@ -6,12 +6,13 @@
 import { spawn } from 'child_process';
 
 /**
- * Execute C++ binary with timeout protection
+ * Execute C++ binary with timeout protection and stdin support
  * @param {string} binaryPath - Path to executable binary
  * @param {number} timeout - Execution timeout in ms (default 30s)
+ * @param {string} stdin - Optional input to pass to the process
  * @returns {Promise<{ stdout: string, stderr: string, runtimeSuccess: boolean, executionTime: number, timedOut: boolean }>}
  */
-export async function executeProcess(binaryPath, timeout = 30000) {
+export async function executeProcess(binaryPath, timeout = 30000, stdin = '') {
   return new Promise((resolve) => {
     const startTime = Date.now();
     let stdout = '';
@@ -22,6 +23,18 @@ export async function executeProcess(binaryPath, timeout = 30000) {
       timeout,
       stdio: ['pipe', 'pipe', 'pipe'],
     });
+
+    // Write stdin if provided
+    if (stdin) {
+      try {
+        process.stdin.write(stdin);
+        process.stdin.end();
+      } catch (err) {
+        // Process might close before we write stdin
+      }
+    } else {
+      process.stdin.end();
+    }
 
     const timeoutHandle = setTimeout(() => {
       timedOut = true;
@@ -101,3 +114,4 @@ export async function executeProcess(binaryPath, timeout = 30000) {
     });
   });
 }
+

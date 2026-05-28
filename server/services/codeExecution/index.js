@@ -19,12 +19,14 @@ import logger from '../../utils/logger.js';
  * @param {Object} options - Execution options
  * @param {number} options.compileTimeout - Compilation timeout (ms, default 10000)
  * @param {number} options.runtimeTimeout - Runtime timeout (ms, default 30000)
+ * @param {string} options.stdin - Optional stdin input for the program
  * @returns {Promise<Object>} Execution result
  */
 export async function executeCode(code, options = {}) {
   const {
     compileTimeout = 10000,
     runtimeTimeout = 30000,
+    stdin = '',
   } = options;
 
   const tempDir = createTempDirectory();
@@ -55,9 +57,9 @@ export async function executeCode(code, options = {}) {
 
     logger.info(`[CodeExecution] Compilation successful (${compileResult.compileTime}ms)`);
 
-    // Step 3: Execute
-    logger.info(`[CodeExecution] Executing ${binaryPath}`);
-    const runtimeResult = await executeProcess(binaryPath, runtimeTimeout);
+    // Step 3: Execute with stdin if provided
+    logger.info(`[CodeExecution] Executing ${binaryPath}${stdin ? ' (with stdin)' : ''}`);
+    const runtimeResult = await executeProcess(binaryPath, runtimeTimeout, stdin);
 
     logger.info(`[CodeExecution] Execution completed (${runtimeResult.executionTime}ms, timedOut: ${runtimeResult.timedOut})`);
 
@@ -86,3 +88,4 @@ export async function executeCode(code, options = {}) {
     await cleanupTempDirectory(tempDir);
   }
 }
+
