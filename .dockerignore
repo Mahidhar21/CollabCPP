@@ -1,0 +1,12 @@
+# Ignore node modules and build artifacts
+**/node_modules
+**/dist
+**/.cache
+**/.env
+**/.DS_Store
+**/npm-debug.log*
+**/yarn-error.log*
+.git
+.gitignore
+README.md
+docs

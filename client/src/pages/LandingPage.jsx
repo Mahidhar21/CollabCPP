@@ -68,9 +68,7 @@ int main() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8">
-        <FeatureGrid />
-      </section>
+      
     </div>
   );
 }

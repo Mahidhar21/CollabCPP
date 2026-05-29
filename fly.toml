@@ -1,0 +1,35 @@
+app = "collabcpp-server"
+primary_region = "iad"
+
+[build]
+  dockerfile = "./Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+  PORT = "5000"
+  LOG_LEVEL = "info"
+  # Set CLIENT_URL to your frontend host in production.
+  CLIENT_URL = "https://your-frontend-url.example"
+
+[[services]]
+  internal_port = 5000
+  protocol = "tcp"
+
+  [services.concurrency]
+    type = "connections"
+    soft_limit = 250
+    hard_limit = 300
+
+  [[services.ports]]
+    handlers = ["http"]
+    port = 80
+
+  [[services.ports]]
+    handlers = ["tls"]
+    port = 443
+
+  [services.tcp_checks]
+    interval = 10000
+    timeout = 2000
+    grace_period = "10s"
+    restart_limit = 0

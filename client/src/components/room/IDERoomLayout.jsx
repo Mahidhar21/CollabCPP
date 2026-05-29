@@ -1,24 +1,36 @@
 /**
  * IDERoomLayout Component
- * Professional IDE-style layout with all panels visible and resizable
+ * Professional IDE-style layout with properly resizable panels
  * 
- * Structure:
- * ┌─────────────────────────────────────┐
- * │           Room Header               │
- * ├──────────────┬──────────────────────┤
- * │              │                      │
- * │  Sidebar     │  Editor + Output     │
- * │  (collapsible)        (resizable)   │
- * │              │                      │
- * └──────────────┴──────────────────────┘
+ * Layout Structure:
+ * ┌────────────────────────────────────────┐
+ * │         Room Header (fixed top)        │
+ * ├──────────┬──────────────────────────────┤
+ * │          │                              │
+ * │ Sidebar  │ Editor + Output              │
+ * │(resiz)   │ (Editor fills, Output fixed) │
+ * │          │                              │
+ * └──────────┴──────────────────────────────┘
+ * 
+ * Resizing:
+ * - Sidebar: horizontal (left/right drag)
+ * - Output: vertical (up/down drag)
+ * - Editor: fills remaining space
  */
 
-import { useState, useCallback } from 'react';
-import { cn } from '../../utils/cn.js';
+import { useCallback } from 'react';
 import { useResizablePanel } from '../../hooks/useResizablePanel.js';
 import EditorPanel from './EditorPanel.jsx';
 import OutputPanel from './OutputPanel.jsx';
 import { RoomSidebar } from './RoomSidebar.jsx';
+
+const SIDEBAR_MIN = 240;
+const SIDEBAR_MAX = 500;
+const SIDEBAR_DEFAULT = 320;
+
+const OUTPUT_MIN = 120;
+const OUTPUT_MAX = 400;
+const OUTPUT_DEFAULT = 200;
 
 export function IDERoomLayout({
   // Editor
@@ -57,73 +69,105 @@ export function IDERoomLayout({
   roomId,
   onCopyId,
 }) {
-  // Sidebar width resizing
-  const { size: sidebarWidth, handleMouseDown: handleSidebarResize } = useResizablePanel(
-    320,  // initial
-    240,  // min
-    500,  // max
-    () => {}  // onResize (triggers window resize for Monaco)
+  // Sidebar width resizing (horizontal)
+  const { 
+    size: sidebarWidth, 
+    handleMouseDown: handleSidebarResize,
+    isDragging: isSidebarDragging,
+  } = useResizablePanel(
+    SIDEBAR_DEFAULT,
+    SIDEBAR_MIN,
+    SIDEBAR_MAX,
+    useCallback(() => {
+      // Trigger Monaco layout recalculation
+      window.dispatchEvent(new Event('resize'));
+    }, [])
   );
 
-  // Output panel height resizing
-  const { size: outputHeight, handleMouseDown: handleOutputResize } = useResizablePanel(
-    200,  // initial
-    120,  // min
-    400,  // max
-    () => {}
+  // Output panel height resizing (vertical)
+  const { 
+    size: outputHeight, 
+    handleMouseDown: handleOutputResize,
+    isDragging: isOutputDragging,
+  } = useResizablePanel(
+    OUTPUT_DEFAULT,
+    OUTPUT_MIN,
+    OUTPUT_MAX,
+    useCallback(() => {
+      // Trigger Monaco layout recalculation
+      window.dispatchEvent(new Event('resize'));
+    }, [])
   );
 
   return (
     <div className="flex min-h-0 flex-1 overflow-hidden">
-      {/* Sidebar with Participants + Chat + Whiteboard */}
-      <RoomSidebar
-        sidebarWidth={sidebarWidth}
-        participants={participants}
-        presenceLoading={presenceLoading}
-        presenceError={presenceError}
-        chatProps={{
-          messages: chatMessages,
-          loading: chatLoading,
-          error: chatError,
-          isSending: chatIsSending,
-          sendMessage: onChatSend,
-        }}
-        isJoined={isJoined}
-        roomId={roomId}
-      />
+      {/* ===== SIDEBAR ===== */}
+      <div 
+        style={{ width: `${sidebarWidth}px` }}
+        className="flex-shrink-0 overflow-hidden transition-none"
+      >
+        <RoomSidebar
+          sidebarWidth={sidebarWidth}
+          participants={participants}
+          presenceLoading={presenceLoading}
+          presenceError={presenceError}
+          chatProps={{
+            messages: chatMessages,
+            loading: chatLoading,
+            error: chatError,
+            isSending: chatIsSending,
+            sendMessage: onChatSend,
+          }}
+          isJoined={isJoined}
+          roomId={roomId}
+        />
+      </div>
 
-      {/* Sidebar Resize Handle */}
+      {/* ===== SIDEBAR RESIZE HANDLE (horizontal) ===== */}
       <div
-        onMouseDown={handleSidebarResize}
-        className="w-1 bg-surface-border hover:bg-accent/40 cursor-col-resize transition-colors shrink-0"
+        onMouseDown={(e) => handleSidebarResize(e, true)} // true = horizontal
+        className={`w-1 flex-shrink-0 cursor-col-resize transition-colors ${
+          isSidebarDragging 
+            ? 'bg-accent/60' 
+            : 'bg-surface-border hover:bg-accent/40'
+        }`}
         title="Drag to resize sidebar"
       />
 
-      {/* Main Editor Area */}
+      {/* ===== MAIN EDITOR AREA ===== */}
       <div className="flex min-h-0 flex-1 flex-col">
         {/* Editor Panel */}
-        <EditorPanel
-          code={code}
-          onChange={onCodeChange}
-          onMount={onEditorMount}
-          remoteCursors={remoteCursors}
-          typers={typers}
-          editorRef={editorRef}
-          monacoRef={monacoRef}
-          isConnected={isConnected}
-          onRunCode={onRunCode}
-          isExecuting={isExecuting}
-        />
+        <div className="flex min-h-0 flex-1">
+          <EditorPanel
+            code={code}
+            onChange={onCodeChange}
+            onMount={onEditorMount}
+            remoteCursors={remoteCursors}
+            typers={typers}
+            editorRef={editorRef}
+            monacoRef={monacoRef}
+            isConnected={isConnected}
+            onRunCode={onRunCode}
+            isExecuting={isExecuting}
+          />
+        </div>
 
-        {/* Output Resize Handle */}
+        {/* ===== OUTPUT RESIZE HANDLE (vertical) ===== */}
         <div
-          onMouseDown={handleOutputResize}
-          className="h-1 bg-surface-border hover:bg-accent/40 cursor-row-resize transition-colors shrink-0"
-          title="Drag to resize output panel"
+          onMouseDown={(e) => handleOutputResize(e, false)} // false = vertical
+          className={`h-1 flex-shrink-0 cursor-row-resize transition-colors ${
+            isOutputDragging 
+              ? 'bg-accent/60' 
+              : 'bg-surface-border hover:bg-accent/40'
+          }`}
+          title="Drag to resize output console"
         />
 
         {/* Output Panel */}
-        <div style={{ height: `${outputHeight}px` }} className="overflow-hidden">
+        <div 
+          style={{ height: `${outputHeight}px` }}
+          className="flex-shrink-0 overflow-hidden"
+        >
           <OutputPanel
             output={executionOutput}
             isExecuting={isExecuting}
@@ -136,3 +180,4 @@ export function IDERoomLayout({
     </div>
   );
 }
+

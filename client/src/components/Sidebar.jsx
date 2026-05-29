@@ -8,8 +8,6 @@ import useAuthStore from '../store/useAuthStore.js';
 const navItems = [
   { to: '/dashboard', label: 'Overview', icon: '◫' },
   { to: '/dashboard', label: 'Sessions', icon: '◇' },
-  { to: '/dashboard', label: 'Problems', icon: '▤', disabled: true },
-  { to: '/dashboard', label: 'Settings', icon: '⚙', disabled: true },
 ];
 
 export default function Sidebar() {
@@ -48,14 +46,11 @@ export default function Sidebar() {
             key={item.label}
             to={item.to}
             end={item.label === 'Overview'}
-            onClick={(e) => item.disabled && e.preventDefault()}
             className={({ isActive }) =>
               cn(
                 'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all duration-200',
-                item.disabled
-                  ? 'cursor-not-allowed opacity-40'
-                  : 'hover:bg-white/5',
-                isActive && !item.disabled
+                'hover:bg-white/5',
+                isActive
                   ? 'bg-white/5 text-brand-highlight'
                   : 'text-accent-muted'
               )
@@ -63,11 +58,6 @@ export default function Sidebar() {
           >
             <span className="font-mono text-xs w-4 text-center">{item.icon}</span>
             {sidebarOpen && <span>{item.label}</span>}
-            {sidebarOpen && item.disabled && (
-              <span className="ml-auto font-mono text-[10px] text-accent-dim">
-                soon
-              </span>
-            )}
           </NavLink>
         ))}
       </nav>
