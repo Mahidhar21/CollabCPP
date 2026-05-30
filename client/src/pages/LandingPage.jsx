@@ -28,6 +28,10 @@ export default function LandingPage() {
               Designed and built by Mahidhar Geddada.
             </p>
 
+            <p className="mt-6 max-w-lg text-base leading-relaxed text-accent-muted">
+              Designed and built by Mahidhar Geddada.
+            </p>
+
             <div className="mt-10 flex flex-wrap items-center gap-3">
               <Link to="/signup">
                 <Button size="lg">Get started</Button>
