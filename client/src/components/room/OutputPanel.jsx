@@ -14,7 +14,6 @@ export default function OutputPanel({
   stdinInput,
   onStdinChange,
 }) {
-  // Extract result from output object
   const result = output?.result;
   const executedBy = output?.executedBy;
 
@@ -22,123 +21,111 @@ export default function OutputPanel({
     <RoomPanel 
       title="Execution" 
       subtitle="Input & Output" 
-      className="h-48 shrink-0" 
-      bodyClassName="p-0 flex flex-col min-h-0"
+      className="h-full flex flex-col min-h-0"
+      bodyClassName="p-0 flex flex-1 min-h-0"
     >
-      <div className="flex flex-col min-h-0 flex-1">
-        {/* Stdin Input Section */}
-        <div className="flex-shrink-0 border-b border-surface-border bg-surface-overlay/40">
-          <div className="px-3 py-2 border-b border-surface-border/50 flex items-center justify-between">
-            <span className="text-xs font-medium text-accent-dim uppercase tracking-wider">stdin Input</span>
+      <div className="flex h-full min-h-0 w-full overflow-hidden rounded-b-lg bg-[#070809]">
+        {/* Stdin Panel */}
+        <div className="flex-1 min-w-0 border-r border-surface-border bg-surface-overlay/80 p-3 flex flex-col gap-3">
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <p className="text-xs uppercase tracking-wider text-accent-dim">Program input</p>
+              <p className="text-[10px] text-surface-muted">Stdin sent to the running program</p>
+            </div>
             <span className="text-[10px] text-surface-muted">{stdinInput?.length || 0} chars</span>
           </div>
+
           <textarea
             value={stdinInput || ''}
             onChange={(e) => onStdinChange?.(e.target.value)}
             disabled={isExecuting}
-            placeholder="Provide input for the program here (optional)"
-            className="w-full h-20 p-2 font-mono text-xs bg-surface text-accent border-0 outline-none resize-none disabled:opacity-50 placeholder-accent-dim/50"
+            placeholder="Enter input for stdin..."
+            className="flex-1 min-h-0 resize-none rounded border border-surface-border bg-black/90 p-3 text-xs font-mono text-white outline-none ring-0 transition-colors focus:border-accent focus:ring-2 focus:ring-accent/30 disabled:cursor-not-allowed disabled:opacity-60"
           />
         </div>
 
-        {/* Stdout/Stderr Output Section */}
-        <div className="flex-1 overflow-auto min-h-0 bg-surface">
-          <div className="p-3 font-mono text-xs">
-            {/* Execution Status */}
-            <div className="mb-3 pb-3 border-b border-surface-border/50">
-              {isExecuting && (
-                <div className="flex items-center gap-2 text-surface-muted">
-                  <div className="w-1.5 h-1.5 bg-accent-muted rounded-full animate-pulse" />
-                  <span>Executing...</span>
-                </div>
-              )}
-
-              {error && (
-                <div className="text-red-400">
-                  <span className="font-medium">Error:</span> {error}
-                </div>
-              )}
-
-              {!result && !error && !isExecuting && (
-                <div className="text-surface-muted/60">
-                  No output yet. Run your code to see results.
-                </div>
-              )}
-
-              {result && (
-                <div className="space-y-2">
-                  {/* Compilation Status */}
-                  <div className={cn(
-                    'text-xs font-medium flex items-center gap-1.5',
-                    result.compileSuccess ? 'text-emerald-400' : 'text-red-400'
-                  )}>
-                    <span className={cn(
-                      'w-1.5 h-1.5 rounded-full',
-                      result.compileSuccess ? 'bg-emerald-400' : 'bg-red-400'
-                    )} />
-                    <span>Compile {result.compileSuccess ? '✓' : '✗'}</span>
-                    <span className="text-surface-muted opacity-75">({result.compileTime}ms)</span>
-                  </div>
-
-                  {/* Runtime Status */}
-                  {result.compileSuccess && (
-                    <div className={cn(
-                      'text-xs font-medium flex items-center gap-1.5',
-                      result.runtimeSuccess ? 'text-emerald-400' : 'text-red-400'
-                    )}>
-                      <span className={cn(
-                        'w-1.5 h-1.5 rounded-full',
-                        result.runtimeSuccess ? 'bg-emerald-400' : 'bg-red-400'
-                      )} />
-                      <span>Runtime {result.runtimeSuccess ? '✓' : '✗'}</span>
-                      <span className="text-surface-muted opacity-75">({result.executionTime}ms)</span>
-                      {result.timedOut && <span className="text-orange-400">• Timeout</span>}
-                    </div>
-                  )}
-                </div>
-              )}
+        {/* Output Panel */}
+        <div className="flex-1 min-w-0 flex flex-col min-h-0 overflow-hidden p-3">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-3 rounded border border-surface-border bg-surface-overlay/80 p-3">
+            <div>
+              <p className="text-xs uppercase tracking-wider text-accent-dim">Execution output</p>
+              <p className="text-[10px] text-surface-muted">Stdout, stderr, compile & runtime status</p>
             </div>
+            <div className="text-right text-[10px] text-surface-muted">
+              {executedBy && <p>Last run by {executedBy.username}</p>}
+              <p>{isExecuting ? 'Running...' : result ? 'Ready' : 'Idle'}</p>
+            </div>
+          </div>
 
-            {/* Compile Errors */}
-            {result && !result.compileSuccess && result.stderr && (
-              <div className="mb-3">
-                <div className="text-xs font-medium text-red-400 mb-1.5">Compilation Error:</div>
-                <div className="text-red-300/90 whitespace-pre-wrap break-words bg-red-950/20 p-2 rounded border border-red-900/30 text-[11px]">
-                  {result.stderr}
-                </div>
+          <div className="flex-1 min-h-0 overflow-auto rounded-lg border border-surface-border bg-[#010203] p-3 text-xs text-white font-mono w-full">
+            {isExecuting && (
+              <div className="mb-3 flex items-center gap-2 text-accent">
+                <span className="h-2.5 w-2.5 rounded-full bg-accent animate-pulse" />
+                <span>Executing program…</span>
               </div>
             )}
 
-            {/* Runtime Errors & Output */}
-            {result && result.compileSuccess && (
-              <div className="space-y-2.5">
-                {/* Runtime Error */}
-                {!result.runtimeSuccess && result.stderr && (
-                  <div>
-                    <div className="text-xs font-medium text-red-400 mb-1.5">Runtime Error:</div>
-                    <div className="text-red-300/90 whitespace-pre-wrap break-words bg-red-950/20 p-2 rounded border border-red-900/30 text-[11px]">
-                      {result.stderr}
-                    </div>
+            {error && (
+              <div className="mb-3 rounded border border-red-500/30 bg-red-500/10 p-3 text-red-200">
+                <p className="font-semibold text-sm">Execution error</p>
+                <p className="mt-1 whitespace-pre-wrap">{error}</p>
+              </div>
+            )}
+
+            {result ? (
+              <div className="space-y-4">
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div className="rounded border border-surface-border bg-surface-overlay/60 p-3">
+                    <p className="text-[10px] uppercase tracking-wider text-accent-dim">Compile status</p>
+                    <p className={`mt-2 text-sm font-semibold ${result.compileSuccess ? 'text-emerald-400' : 'text-red-400'}`}>
+                      {result.compileSuccess ? 'Compiled successfully' : 'Compilation failed'}
+                    </p>
+                    <p className="mt-1 text-[10px] text-surface-muted">{result.compileTime} ms</p>
+                  </div>
+
+                  <div className="rounded border border-surface-border bg-surface-overlay/60 p-3">
+                    <p className="text-[10px] uppercase tracking-wider text-accent-dim">Runtime status</p>
+                    <p className={`mt-2 text-sm font-semibold ${result.runtimeSuccess ? 'text-emerald-400' : 'text-red-400'}`}>
+                      {result.runtimeSuccess ? 'Runtime successful' : 'Runtime failed'}
+                    </p>
+                    <p className="mt-1 text-[10px] text-surface-muted">{result.executionTime} ms</p>
+                    {result.timedOut && <p className="mt-1 text-[10px] text-orange-400">Timeout exceeded</p>}
+                  </div>
+                </div>
+
+                {!result.compileSuccess && result.stderr && (
+                  <div className="rounded border border-red-500/30 bg-red-500/10 p-3">
+                    <p className="text-[10px] uppercase tracking-wider text-red-200/70">Compiler output</p>
+                    <pre className="mt-2 max-h-56 overflow-auto whitespace-pre-wrap text-[11px] text-red-100">{result.stderr}</pre>
                   </div>
                 )}
 
-                {/* Program Output */}
-                {result.stdout && (
-                  <div>
-                    <div className="text-xs font-medium text-emerald-300 mb-1.5">Output:</div>
-                    <div className="text-emerald-200/90 whitespace-pre-wrap break-words bg-emerald-950/20 p-2 rounded border border-emerald-900/30 text-[11px]">
-                      {result.stdout}
-                    </div>
+                {result.compileSuccess && result.stderr && (
+                  <div className="rounded border border-yellow-500/30 bg-yellow-500/10 p-3">
+                    <p className="text-[10px] uppercase tracking-wider text-yellow-200/70">Runtime stderr</p>
+                    <pre className="mt-2 max-h-56 overflow-auto whitespace-pre-wrap text-[11px] text-white">{result.stderr}</pre>
                   </div>
                 )}
 
-                {/* Empty Output */}
-                {result.runtimeSuccess && !result.stdout && (
-                  <div className="text-surface-muted/50 text-[11px]">
-                    (program produced no output)
+                {result.stdout ? (
+                  <div className="rounded border border-surface-border bg-surface-overlay/60 p-3">
+                    <p className="text-[10px] uppercase tracking-wider text-accent-dim">Program output</p>
+                    <pre className="mt-2 max-h-72 overflow-auto whitespace-pre-wrap text-[11px] text-white">{result.stdout}</pre>
                   </div>
+                ) : (
+                  !error && !isExecuting && (
+                    <div className="rounded border border-surface-border bg-surface-overlay/60 p-3 text-white/70">
+                      No program output available.
+                    </div>
+                  )
                 )}
               </div>
+            ) : (
+              !error && !isExecuting && (
+                <div className="flex h-full min-h-[140px] items-center justify-center text-surface-muted">
+                  No output yet. Run your code to see execution results.
+                </div>
+              )
             )}
           </div>
         </div>

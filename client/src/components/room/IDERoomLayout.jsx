@@ -18,11 +18,12 @@
  * - Editor: fills remaining space
  */
 
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useResizablePanel } from '../../hooks/useResizablePanel.js';
 import EditorPanel from './EditorPanel.jsx';
 import OutputPanel from './OutputPanel.jsx';
 import { RoomSidebar } from './RoomSidebar.jsx';
+import { FullscreenPanel } from './FullscreenPanel.jsx';
 
 const SIDEBAR_MIN = 240;
 const SIDEBAR_MAX = 500;
@@ -63,6 +64,12 @@ export function IDERoomLayout({
   chatIsSending,
   onChatSend,
   
+  // Fullscreen
+  fullscreenPanel,
+  onFullscreenChat,
+  onFullscreenWhiteboard,
+  onCloseFullscreen,
+  
   // Room
   room,
   isJoined,
@@ -99,8 +106,23 @@ export function IDERoomLayout({
     }, [])
   );
 
+  useEffect(() => {
+    if (fullscreenPanel) {
+      window.dispatchEvent(new Event('resize'));
+    }
+  }, [fullscreenPanel]);
+
   return (
     <div className="flex min-h-0 flex-1 overflow-hidden">
+      {fullscreenPanel && (
+        <FullscreenPanel
+          panelName={fullscreenPanel}
+          onClose={onCloseFullscreen}
+          isJoined={isJoined}
+          roomId={roomId}
+        />
+      )}
+
       {/* ===== SIDEBAR ===== */}
       <div 
         style={{ width: `${sidebarWidth}px` }}
@@ -120,6 +142,9 @@ export function IDERoomLayout({
           }}
           isJoined={isJoined}
           roomId={roomId}
+          fullscreenPanel={fullscreenPanel}
+          onFullscreenChat={onFullscreenChat}
+          onFullscreenWhiteboard={onFullscreenWhiteboard}
         />
       </div>
 

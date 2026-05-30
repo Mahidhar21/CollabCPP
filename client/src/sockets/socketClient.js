@@ -5,6 +5,7 @@ const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
 
 let socket = null;
 let connectionToken = null;
+const listenerQueue = [];
 
 /**
  * Singleton Socket.IO client.
@@ -44,6 +45,11 @@ export function connectSocket(token) {
     transports: ['websocket', 'polling'],
   });
 
+  // Reattach any listeners that were registered before the socket existed
+  listenerQueue.forEach(({ event, handler }) => {
+    socket.on(event, handler);
+  });
+
   return socket;
 }
 
@@ -60,9 +66,18 @@ export function disconnectSocket() {
  * Registers a one-time listener; returns unsubscribe function to prevent leaks.
  */
 export function onSocketEvent(event, handler) {
-  if (!socket) return () => {};
-  socket.on(event, handler);
+  const listener = { event, handler };
+  listenerQueue.push(listener);
+
+  if (socket) {
+    socket.on(event, handler);
+  }
+
   return () => {
+    const index = listenerQueue.indexOf(listener);
+    if (index !== -1) {
+      listenerQueue.splice(index, 1);
+    }
     socket?.off(event, handler);
   };
 }

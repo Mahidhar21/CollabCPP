@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import RoomHeader from '../components/room/RoomHeader.jsx';
 import { IDERoomLayout } from '../components/room/IDERoomLayout.jsx';
@@ -59,6 +59,20 @@ export default function RoomPage() {
     normalizedRoomId,
     isJoined && accessReady
   );
+
+  const [fullscreenPanel, setFullscreenPanel] = useState(null);
+
+  const handleFullscreen = useCallback((panelName) => {
+    setFullscreenPanel((current) => (current === panelName ? null : panelName));
+  }, []);
+
+  const closeFullscreen = useCallback(() => {
+    setFullscreenPanel(null);
+  }, []);
+
+  useEffect(() => {
+    window.dispatchEvent(new Event('resize'));
+  }, [fullscreenPanel]);
 
   // Session persistence
   const {
@@ -185,6 +199,10 @@ export default function RoomPage() {
         isJoined={isJoined && accessReady}
         roomId={normalizedRoomId}
         onCopyId={handleCopyId}
+        fullscreenPanel={fullscreenPanel}
+        onFullscreenChat={() => handleFullscreen('chat')}
+        onFullscreenWhiteboard={() => handleFullscreen('whiteboard')}
+        onCloseFullscreen={closeFullscreen}
       />
 
       {/* Session persistence status */}

@@ -5,7 +5,7 @@
  * Overlays the entire room with one expanded panel.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { PanelHeader } from '../ui/PanelHeader.jsx';
 import ChatPanel from './ChatPanel.jsx';
 import WhiteboardPanel from './WhiteboardPanel.jsx';
@@ -17,6 +17,12 @@ export function FullscreenPanel({
   isJoined,
   roomId,
 }) {
+  useEffect(() => {
+    window.dispatchEvent(new Event('resize'));
+    return () => {
+      window.dispatchEvent(new Event('resize'));
+    };
+  }, []);
   const renderPanel = () => {
     switch (panelName) {
       case 'chat':

@@ -9,6 +9,7 @@ export default function ChatPanel({
   loading: propLoading,
   error: propError,
   isSending: propIsSending,
+  sendMessage: propSendMessage,
   onSendMessage,
 }) {
   const useHook = !propMessages;
@@ -19,7 +20,7 @@ export default function ChatPanel({
   const error = propError ?? chat.error;
   const isSending = propIsSending ?? chat.isSending;
 
-  const sendMessage = onSendMessage ?? chat.sendMessage;
+  const sendMessage = propSendMessage ?? onSendMessage ?? chat.sendMessage;
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef(null);
 
