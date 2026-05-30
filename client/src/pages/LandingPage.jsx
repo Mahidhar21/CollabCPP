@@ -25,6 +25,7 @@ export default function LandingPage() {
               CollabCPP is a realtime MERN platform for structured technical
               interviews — shared editing, execution, and presence in one
               focused workspace.
+              Designed and built by Mahidhar Geddada.
             </p>
 
             <div className="mt-10 flex flex-wrap items-center gap-3">
