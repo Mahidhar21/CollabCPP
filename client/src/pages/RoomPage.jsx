@@ -110,15 +110,20 @@ export default function RoomPage() {
       if (isJoined && room) {
         saveSession({
           title: room.title,
-          owner: room.owner,
+          owner: room.owner?.id || room.owner?._id || room.owner,
           participants: participants.map((p) => ({
-            user: p.id,
+            user: p.userId,
             username: p.username,
-            joinedAt: p.joinedAt,
+            joinedAt: p.joinedAt || new Date(),
             lastActive: new Date(),
           })),
           currentCode: code,
-          chatHistory: messages,
+          chatHistory: messages.map((message) => ({
+            sender: message.senderId || message.userId,
+            senderName: message.senderName || message.username,
+            content: message.content || message.message,
+            timestamp: message.timestamp,
+          })),
         });
       }
     };

@@ -4,12 +4,7 @@ import Button from './ui/Button.jsx';
 import { cn } from '../utils/cn.js';
 import useAuthStore from '../store/useAuthStore.js';
 
-const navLinks = [
-  { to: '/#features', label: 'Features', external: true },
-];
-
 export default function Navbar() {
-  const location = useLocation();
   const { isAuthenticated, user, logout } = useAuthStore();
 
   return (
@@ -18,31 +13,7 @@ export default function Navbar() {
         <Logo />
 
         <nav className="hidden items-center gap-1 md:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.to}
-              to={link.to}
-              className={cn(
-                'rounded-md px-3 py-1.5 text-sm text-accent-muted transition-colors duration-200',
-                'hover:bg-white/5 hover:text-accent',
-                !link.external && location.pathname === link.to && 'text-accent'
-              )}
-            >
-              {link.label}
-            </Link>
-          ))}
-          {isAuthenticated && (
-            <Link
-              to="/dashboard"
-              className={cn(
-                'rounded-md px-3 py-1.5 text-sm text-accent-muted transition-colors duration-200',
-                'hover:bg-white/5 hover:text-accent',
-                location.pathname === '/dashboard' && 'text-accent'
-              )}
-            >
-              Dashboard
-            </Link>
-          )}
+          {/* no center nav links */}
         </nav>
 
         <div className="flex items-center gap-2">

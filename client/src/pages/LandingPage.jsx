@@ -36,11 +36,6 @@ export default function LandingPage() {
                   Sign in
                 </Button>
               </Link>
-              <a href="#features">
-                <Button variant="outline" size="lg">
-                  View roadmap
-                </Button>
-              </a>
             </div>
           </div>
 

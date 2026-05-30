@@ -10,6 +10,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import useSocketStore from '../store/useSocketStore.js';
+import { getStoredToken } from '../utils/token.js';
 import { SOCKET_EVENTS } from '../sockets/socketEvents.js';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -34,7 +35,7 @@ export function useSession(roomId, isActive) {
       setError(null);
 
       try {
-        const token = localStorage.getItem('authToken');
+        const token = getStoredToken();
         const response = await fetch(`${API_URL}/sessions/${roomId}`, {
           method: 'GET',
           headers: {
@@ -130,7 +131,7 @@ export function useSession(roomId, isActive) {
       setSaveStatus('saving');
 
       try {
-        const token = localStorage.getItem('authToken');
+        const token = getStoredToken();
         const response = await fetch(`${API_URL}/sessions/save`, {
           method: 'POST',
           headers: {
@@ -204,7 +205,7 @@ export function useRecentSessions() {
       setError(null);
 
       try {
-        const token = localStorage.getItem('authToken');
+        const token = getStoredToken();
         const response = await fetch(`${API_URL}/sessions/recent?limit=10`, {
           method: 'GET',
           headers: {

@@ -19,12 +19,6 @@ const router = express.Router();
 router.use(protect);
 
 /**
- * GET /api/sessions/:roomId
- * Fetch saved session data
- */
-router.get('/:roomId', getSession);
-
-/**
  * POST /api/sessions/save
  * Persist current session state
  */
@@ -34,7 +28,19 @@ router.post('/save', saveSessionData);
  * GET /api/sessions/recent
  * Fetch recent sessions for current user
  */
-router.get('/', getRecentSessionsData);
+router.get('/recent', getRecentSessionsData);
+
+/**
+ * PATCH /api/sessions/:roomId/deactivate
+ * Mark session as inactive
+ */
+router.patch('/:roomId/deactivate', deactivateSessionData);
+
+/**
+ * GET /api/sessions/:roomId
+ * Fetch saved session data
+ */
+router.get('/:roomId', getSession);
 
 /**
  * DELETE /api/sessions/:roomId
