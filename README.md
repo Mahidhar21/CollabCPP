@@ -26,7 +26,7 @@ I built this project to explore how authentication, REST APIs, WebSockets, room-
 
 ---
 
-## 📸 Screenshots
+## Screenshots
 
 ### Landing Page
 
