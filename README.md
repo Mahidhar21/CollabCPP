@@ -24,6 +24,58 @@ I built this project to explore how authentication, REST APIs, WebSockets, room-
 - Dockerized backend
 - MongoDB Atlas integration
 
+---
+
+## 📸 Screenshots
+
+### Landing Page
+
+![Landing Page](Screenshots/LandingPage.png)
+
+---
+
+### Dashboard
+
+![Dashboard](Screenshots/DashBoard.png)
+
+---
+
+### Room Creation
+
+![Room Creation](Screenshots/Room.png)
+
+---
+
+### Shared Coding Workspace
+
+![Shared Room](Screenshots/Shared%20Room.png)
+
+---
+
+### Real-Time Collaborative Coding
+
+![Collaborative Editor](Screenshots/CodeSync.png)
+
+---
+
+### C++ Code Execution
+
+![Code Execution](Screenshots/CodeRun.png)
+
+---
+
+### Built-in Chat
+
+![Chat](Screenshots/Chat.png)
+
+---
+
+### Shared Whiteboard
+
+![Whiteboard](Screenshots/WhiteBoard.png)
+
+---
+
 ## Tech Stack
 
 ### Frontend
@@ -179,53 +231,7 @@ Live Demo:
 
 https://collab-cpp.vercel.app/
 
-## 📸 Screenshots
 
-### Landing Page
-
-![Landing Page](Screenshots/LandingPage.png)
-
----
-
-### Dashboard
-
-![Dashboard](Screenshots/DashBoard.png)
-
----
-
-### Room Creation
-
-![Room Creation](Screenshots/Room.png)
-
----
-
-### Shared Coding Workspace
-
-![Shared Room](Screenshots/Shared%20Room.png)
-
----
-
-### Real-Time Collaborative Coding
-
-![Collaborative Editor](Screenshots/CodeSync.png)
-
----
-
-### C++ Code Execution
-
-![Code Execution](Screenshots/CodeRun.png)
-
----
-
-### Built-in Chat
-
-![Chat](Screenshots/Chat.png)
-
----
-
-### Shared Whiteboard
-
-![Whiteboard](Screenshots/WhiteBoard.png)
 
 ## Future Improvements
 
