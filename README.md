@@ -179,27 +179,53 @@ Live Demo:
 
 https://collab-cpp.vercel.app/
 
-## Screenshots
+## 📸 Screenshots
 
 ### Landing Page
 
-_Add screenshot here._
+![Landing Page](Screenshots/LandingPage.png)
+
+---
 
 ### Dashboard
 
-_Add screenshot here._
+![Dashboard](Screenshots/DashBoard.png)
 
-### Collaborative Editor
+---
 
-_Add screenshot here._
+### Room Creation
 
-### Chat
+![Room Creation](Screenshots/Room.png)
 
-_Add screenshot here._
+---
 
-### Whiteboard
+### Shared Coding Workspace
 
-_Add screenshot here._
+![Shared Room](Screenshots/Shared%20Room.png)
+
+---
+
+### Real-Time Collaborative Coding
+
+![Collaborative Editor](Screenshots/CodeSync.png)
+
+---
+
+### C++ Code Execution
+
+![Code Execution](Screenshots/CodeRun.png)
+
+---
+
+### Built-in Chat
+
+![Chat](Screenshots/Chat.png)
+
+---
+
+### Shared Whiteboard
+
+![Whiteboard](Screenshots/WhiteBoard.png)
 
 ## Future Improvements
 
